@@ -1,0 +1,13 @@
+import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+
+const PublicRoute = () => {
+  const { user, loading } = useAuth();
+
+  if (loading) return <p>Cargando...</p>;
+  if (user) return <Navigate to="/" replace />; // Ya logueado, redirige
+
+  return <Outlet />; // Rutas públicas disponibles
+};
+
+export default PublicRoute;

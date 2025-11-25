@@ -1,0 +1,18 @@
+Json Web Token = JWT
+
+Iniciar proyecto
+
+npm init -y
+npm i nodemon express mysql2 jsonwebtoken dotenv bcrypt joi cookie-parser cors
+
+npm i --save-dev nodemon
+
+     "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+
+npm start
+
+
+

@@ -1,0 +1,24 @@
+npm create vite@latest .
+
+npm install tailwindcss @tailwindcss/vite
+
+en vite.config.js
+
+import { defineConfig } from 'vite'
+import tailwindcss from '@tailwindcss/vite'
+
+export default defineConfig({
+  plugins: [
+    tailwindcss(),
+  ],
+})
+
+index.css
+
+@import "tailwindcss";
+
+
+npm i react-router
+npm install @heroicons/react
+npm i axios
+npm i notistack

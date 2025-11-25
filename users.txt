@@ -1,0 +1,25 @@
+{
+  "name": "diego",
+  "email": "diego@diego.com",
+  "password": "diego123",
+  "confirmPassword": "diego123",
+  "rol_id": 1
+}
+
+
+
+{
+  "name": "carlos",
+  "email": "carlos@carlos.com",
+  "password": "carlos123",
+  "confirmPassword": "carlos123",
+  "rol_id": 2
+}
+
+{
+  "name": "pedro",
+  "email": "pedro@pedro.com",
+  "password": "pedro123",
+  "confirmPassword": "pedro123",
+  "rol_id": 3
+}

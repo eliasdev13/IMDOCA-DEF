@@ -1,0 +1,9 @@
+# Ignorar node_modules en cualquier subcarpeta
+node_modules/
+
+# Archivos de logs
+*.log
+
+# Archivos del sistema o del editor
+.DS_Store
+.vscode/
