@@ -1,26 +1,28 @@
 import axiosInstance from "../utils/axiosInstance";
 
-// Obtener carrito
-export function getCartAPI() {
-  return axiosInstance.get("/cart").then(res => res.data);
-}
+export const getCartAPI = async () => {
+  const res = await axiosInstance.get("/cart");
+  return res.data;
+};
 
-// Agregar producto al carrito
-export function addToCartAPI(batch_id, cantidad_cajas) {
-  return axiosInstance.post("/api/cart/add", { batch_id, cantidad_cajas });
-}
+export const addToCartAPI = async (batch_id, cantidad) => {
+  return axiosInstance.post("/cart/add", {
+    batch_id,
+    cantidad_cajas: Number(cantidad),   // ✔ nombre correcto
+  });
+};
+ 
+export const clearCartAPI = async () => {
+  const res = await axiosInstance.delete("/cart/clear");
+  return res.data;
+};
 
-// Actualizar cantidad
-export function updateCartItemAPI(batch_id, cantidad_cajas) {
-  return axiosInstance.put("/api/cart/update", { batch_id, cantidad_cajas });
-}
+export const removeItemFromCartAPI = async (itemId) => {
+  const res = await axiosInstance.delete(`/cart/item/${itemId}`);
+  return res.data;
+};
 
-// Eliminar item
-export function deleteCartItemAPI(batch_id) {
-  return axiosInstance.delete(`/api/cart/item/${batch_id}`);
-}
-
-// Confirmar pedido
-export function confirmCartAPI() {
-  return axiosInstance.post("/api/cart/confirm");
-}
+export const confirmCartAPI = async () => {
+  const res = await axiosInstance.post("/cart/confirm");
+  return res.data;
+};

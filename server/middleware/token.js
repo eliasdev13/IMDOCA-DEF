@@ -8,22 +8,24 @@ module.exports.generateAccessToken = (user) => {
       roleId: user.rol_id
     },
     process.env.JWT_ACCESS,
-    { expiresIn: process.env.EXPIRE_ACCESS }
+    { expiresIn: process.env.EXPIRE_ACCESS } // ej: 15m
   );
 };
 
-// Genera Refresh Token y lo guarda en cookie HttpOnly
+
+// middleware/token.js
+
 module.exports.generateRefreshToken = (uid, res) => {
   const refreshToken = jwt.sign(
     { uid },
     process.env.JWT_REFRESH,
-    { expiresIn: process.env.EXPIRE_REFRESH } 
+    { expiresIn: process.env.EXPIRE_REFRESH } // ej: 7d
   );
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
-    secure: process.env.MODO !== "developer", 
+    secure: process.env.MODO !== "developer",
     sameSite: "strict",
-    maxAge: 7 * 24 * 60 * 60 * 1000
+    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 días
   });
 };

@@ -3,11 +3,10 @@ import { useAuth } from "../../context/AuthContext";
 
 const PublicRoute = () => {
   const { user, loading } = useAuth();
-
   if (loading) return <p>Cargando...</p>;
-  if (user) return <Navigate to="/" replace />; // Ya logueado, redirige
+  if (user) return <Navigate to="/" replace />;
+  return <Outlet />;
 
-  return <Outlet />; // Rutas públicas disponibles
 };
 
 export default PublicRoute;

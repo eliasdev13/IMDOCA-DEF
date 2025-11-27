@@ -1,36 +1,46 @@
-import axiosInstance from "../utils/axiosInstance"; // tu instancia de axios configurada
+import axiosInstance from "../utils/axiosInstance";
 
-// Crear usuario normal (admin o vendedor)
-export const createUserAPI = async (userData, token) => {
-  try {
-    const res = await axiosInstance.post("/createUser", userData, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return res.data;
-  } catch (err) {
-    console.error("Error creando usuario:", err);
-    throw err.response?.data || err;
-  }
-};
+/* =====================================================================================
+   USUARIOS
+===================================================================================== */
 
-// Crear cliente
-export const createClientAPI = async (clientData, token) => {
-  try {
-    const res = await axiosInstance.post("/createClient", clientData, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return res.data;
-  } catch (err) {
-    console.error("Error creando cliente:", err);
-    throw err.response?.data || err;
-  }
-};
+export const getAllUsersAPI = async () =>
+  (await axiosInstance.get("/users")).data;
 
+export const getUserAPI = async (id) =>
+  (await axiosInstance.get(`/user/${id}`)).data;
 
-// Trae el perfil del usuario logeado
-export const getProfileAPI = async (token) => {
-  const res = await axiosInstance.get("/user/profile", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return res.data;
-};
+export const createUserAPI = async (data) =>
+  (await axiosInstance.post("/createUser", data)).data;
+
+export const updateUserAPI = async (id, data) =>
+  (await axiosInstance.put(`/user/${id}`, data)).data;
+
+export const deleteUserAPI = async (id) =>
+  (await axiosInstance.delete(`/user/${id}`)).data;
+
+/* =====================================================================================
+   CLIENTES
+===================================================================================== */
+
+export const getAllClientsAPI = async () =>
+  (await axiosInstance.get("/clients")).data;
+
+export const getClientAPI = async (id) =>
+  (await axiosInstance.get(`/client/${id}`)).data;
+
+export const createClientAPI = async (data) =>
+  (await axiosInstance.post("/createClient", data)).data;
+
+export const updateClientAPI = async (id, data) =>
+  (await axiosInstance.put(`/client/${id}`, data)).data;
+
+export const deleteClientAPI = async (id) =>
+  (await axiosInstance.delete(`/client/${id}`)).data;
+
+/* =====================================================================================
+   PERFIL
+===================================================================================== */
+
+export const getProfileAPI = async () =>
+  (await axiosInstance.get("/user/profile")).data;

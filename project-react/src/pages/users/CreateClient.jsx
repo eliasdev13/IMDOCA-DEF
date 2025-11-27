@@ -1,3 +1,4 @@
+// src/pages/users/CreateClient.jsx
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { createClientAPI } from "../../api/user";
@@ -18,90 +19,81 @@ export default function CreateClient() {
 
   const [message, setMessage] = useState("");
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       const res = await createClientAPI(formData, token);
       setMessage(res.message);
-      setFormData({ name: "", email: "", password: "", rut: "", razon_social: "", direccion: "", telefono: "" });
+
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        rut: "",
+        razon_social: "",
+        direccion: "",
+        telefono: "",
+      });
     } catch (err) {
       setMessage(err.message || "Error creando cliente");
     }
   };
 
   return (
-    <div className="p-6 max-w-md mx-auto bg-white rounded shadow-md">
-      <h2 className="text-xl font-bold mb-4">Crear Cliente</h2>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-        <input
-          type="text"
-          name="name"
-          placeholder="Nombre"
-          value={formData.name}
-          onChange={handleChange}
-          className="border p-2 rounded"
-          required
-        />
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-          className="border p-2 rounded"
-          required
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Contraseña"
-          value={formData.password}
-          onChange={handleChange}
-          className="border p-2 rounded"
-          required
-        />
-        <input
-          type="text"
-          name="rut"
-          placeholder="RUT"
-          value={formData.rut}
-          onChange={handleChange}
-          className="border p-2 rounded"
-          required
-        />
-        <input
-          type="text"
-          name="razon_social"
-          placeholder="Razón Social"
-          value={formData.razon_social}
-          onChange={handleChange}
-          className="border p-2 rounded"
-          required
-        />
-        <input
-          type="text"
-          name="direccion"
-          placeholder="Dirección"
-          value={formData.direccion}
-          onChange={handleChange}
-          className="border p-2 rounded"
-          required
-        />
-        <input
-          type="text"
-          name="telefono"
-          placeholder="Teléfono"
-          value={formData.telefono}
-          onChange={handleChange}
-          className="border p-2 rounded"
-          required
-        />
-        <button type="submit" className="bg-green-600 text-white p-2 rounded">
+    <div className="max-w-lg mx-auto mt-10 p-6 bg-white dark:bg-gray-900 
+                    rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+
+      <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
+        Crear Cliente
+      </h2>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* CAMPOS */}
+        {[
+          { name: "name", label: "Nombre" },
+          { name: "email", label: "Email", type: "email" },
+          { name: "password", label: "Contraseña", type: "password" },
+          { name: "rut", label: "RUT" },
+          { name: "razon_social", label: "Razón Social" },
+          { name: "direccion", label: "Dirección" },
+          { name: "telefono", label: "Teléfono" },
+        ].map((field) => (
+          <div key={field.name}>
+            <label className="block mb-1 text-gray-700 dark:text-gray-300">
+              {field.label}
+            </label>
+            <input
+              type={field.type || "text"}
+              name={field.name}
+              value={formData[field.name]}
+              onChange={handleChange}
+              className="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-700 
+                         bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-200 
+                         focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+        ))}
+
+        {/* BOTÓN */}
+        <button
+          type="submit"
+          className="w-full bg-green-600 hover:bg-green-700 text-white 
+                     py-2 rounded-lg transition font-semibold"
+        >
           Crear Cliente
         </button>
-        {message && <p className="mt-2 text-red-500">{message}</p>}
+
+        {/* MENSAJE */}
+        {message && (
+          <p className="mt-2 text-center text-blue-600 dark:text-blue-300 font-medium">
+            {message}
+          </p>
+        )}
       </form>
     </div>
   );

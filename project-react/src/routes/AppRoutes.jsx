@@ -1,80 +1,97 @@
+// src/routes/AppRoutes.jsx
 import { Routes, Route } from "react-router-dom";
-import Home from "../pages/public/Home";
+
+// PUBLIC
 import Login from "../pages/public/Login";
+import NotFound from "../pages/public/NotFound";
+
+// PRIVATE (ALL ROLES)
+import Home from "../pages/public/Home";
 import Profile from "../pages/users/Profile";
-import CreateClient from "../pages/users/CreateClient";
+
+// ADMIN PANEL COMBINED
+import AdminManage from "../pages/users/AdminManage";
+
+// USERS
 import CreateUser from "../pages/users/CreateUser";
+import EditUser from "../pages/users/EditUser";
 
-// Client
+// CLIENTS
+import CreateClient from "../pages/users/CreateClient";
+import EditClient from "../pages/users/EditClient";
 
+// INVENTORY / PRODUCTS
+import Inventory from "../pages/users/Inventory";
+import CreateProduct from "../pages/users/CreateProduct";
+import IngresarMercaderia from "../pages/users/IngresarMercarderia"; // ⬅ NUEVO
 
-import Cart from "../pages/client/Cart";
-//import Checkout from "../pages/client/Checkout";
-
-// Admin
-/*
-import AdminDashboard from "../pages/admin/Dashboard";
-import ManageProducts from "../pages/admin/ManageProducts";
-import ManageOrders from "../pages/admin/ManageOrders";
-import ManageUsers from "../pages/admin/ManageUsers";
-*/
-import CrearProduct from "../pages/users/CreateProduct";
+// CLIENT SIDE
 import Products from "../pages/client/Products";
 import ProductDetail from "../pages/client/ProductDetail";
-/*
+import Cart from "../pages/client/Cart";
+import MyOrders from "../pages/client/MyOrders";
+import OrderDetailClient from "../pages/client/OrderDetail";
 
-// Seller
-import SellerDashboard from "../pages/seller/SellerDashboard";
-import SellerInventory from "../pages/seller/SellerInventory";
-import SellerOrders from "../pages/seller/SellerOrders";
-*/
+// ADMIN ORDERS
+import OrdersAdmin from "../pages/users/OrdersAdmin";
+import OrderDetailAdmin from "../pages/users/OrderDetailAdmin";
 
+// AUTH
 import ProtectedRoute from "../components/layout/ProtectedRoute";
 import PublicRoute from "../components/layout/PublicRoute";
-import Inventory from "../pages/users/Inventory";
 
 export default function AppRoutes() {
   return (
     <Routes>
-      {/* Public routes */}
+
+      {/* PUBLIC */}
       <Route element={<PublicRoute />}>
         <Route path="/login" element={<Login />} />
       </Route>
 
-      {/* Profile route: cualquier usuario logueado */}
+      {/* PRIVATE - ANY ROLE */}
       <Route element={<ProtectedRoute />}>
         <Route path="/" element={<Home />} />
         <Route path="/profile" element={<Profile />} />
-      </Route>
-      {/* Client routes (roleId 3) */}
-      <Route element={<ProtectedRoute role={2} />}>
-        {/* Las demás rutas de cliente aún no existen */}
+
+        {/* CLIENTE */}
         <Route path="/products" element={<Products />} />
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/cart" element={<Cart />} />
-        <Route path="/inventory" element={<Inventory />} />
-        {/* <Route path="/checkout" element={<Checkout />} /> */}
+        <Route path="/my-orders" element={<MyOrders />} />
+        <Route path="/my-orders/:id" element={<OrderDetailClient />} />
       </Route>
 
-      {/* Seller routes (roleId 2) */}
-      <Route element={<ProtectedRoute role={2} />}>
-        {/* Aún no existen */}
-        {/* <Route path="/seller" element={<SellerDashboard />} /> */}
-        {/* <Route path="/seller/inventory" element={<SellerInventory />} /> */}
-        {/* <Route path="/seller/orders" element={<SellerOrders />} /> */}
-      </Route>
-
-      {/* Admin routes (roleId 1) */}
+      {/* ADMIN ONLY */}
       <Route element={<ProtectedRoute role={1} />}>
-        {/* Solo lo que ya existe */}
-        <Route path="/createUser" element={<CreateUser />} />
-        <Route path="/createClient" element={<CreateClient />} />
-        <Route path="/createProduct" element={<CrearProduct />} />
-        {/* <Route path="/admin" element={<AdminDashboard />} /> */}
-        {/* <Route path="/admin/products" element={<ManageProducts />} /> */}
-        {/* <Route path="/admin/orders" element={<ManageOrders />} /> */}
-        {/* <Route path="/admin/users" element={<ManageUsers />} /> */}
+
+        <Route path="/admin/manage" element={<AdminManage />} />
+
+        {/* USERS */}
+        <Route path="/users/create" element={<CreateUser />} />
+        <Route path="/users/:id" element={<EditUser />} />
+
+        {/* CLIENTS */}
+        <Route path="/clients/create" element={<CreateClient />} />
+        <Route path="/clients/:id" element={<EditClient />} />
+
+        {/* INVENTARIO */}
+        <Route path="/inventory" element={<Inventory />} />
+
+        {/* PANTALLA DE INGRESO */}
+        <Route path="/inventario/ingresar" element={<IngresarMercaderia />} />
+
+        {/* PRODUCTOS */}
+        <Route path="/createProduct" element={<CreateProduct />} />
+
+        {/* ADMIN ORDERS */}
+        <Route path="/admin/orders" element={<OrdersAdmin />} />
+        <Route path="/admin/orders/:id" element={<OrderDetailAdmin />} />
       </Route>
+
+      {/* 404 */}
+      <Route path="*" element={<NotFound />} />
+
     </Routes>
   );
 }

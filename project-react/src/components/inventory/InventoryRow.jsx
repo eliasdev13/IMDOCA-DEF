@@ -1,60 +1,54 @@
-import ProductImage from "../product/ProductImage";
-import { useProductImage } from "../hooks/useProductImage";
-
+// src/components/inventory/InventoryRow.jsx
 export default function InventoryRow({ item, onAdd, onRemove }) {
+  const getVencimientoColor = (fecha) => {
+    const hoy = new Date();
+    const venc = new Date(fecha);
+    const diff = (venc - hoy) / (1000 * 60 * 60 * 24);
 
-  // Obtener imagen REAL del producto
-  const imagen = useProductImage(item.producto_id);
+    if (diff < 0) return "bg-red-200 text-red-700";
+    if (diff <= 30) return "bg-yellow-200 text-yellow-700";
+    return "bg-green-200 text-green-700";
+  };
 
   return (
-    <tr className="border-b hover:bg-gray-50">
-
-      {/* Imagen */}
+    <tr className="border-t hover:bg-gray-50">
       <td className="p-3">
-        <ProductImage
-          imagen_url={imagen}
-          size="mini"
-          nombre={item.producto_base}
-        />
+        {item.producto_base} - {item.variante}
       </td>
 
-      {/* Datos del producto */}
-      <td className="p-3">
-        <div className="font-semibold">{item.producto_base}</div>
-        <div className="text-gray-500 text-sm">{item.variante}</div>
-      </td>
+      <td className="p-3">{item.presentacion}</td>
 
-      {/* Lote */}
-      <td className="p-3">
-        <div className="font-mono text-sm">{item.codigo_lote}</div>
-        <div className="text-gray-500 text-xs">
-          Vence: {item.fecha_vencimiento?.split("T")[0]}
-        </div>
-      </td>
-
-      {/* EAN */}
       <td className="p-3 font-mono">{item.ean14}</td>
 
-      {/* Stock */}
+      <td className="p-3 font-mono">{item.codigo_lote}</td>
+
       <td className="p-3 font-semibold">{item.stock_cajas}</td>
 
-      {/* Acciones */}
-      <td className="p-3 flex gap-2">
-        <button 
-          className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
-          onClick={() => onAdd(item.batch_id)}
+      <td className="p-3">
+        <span
+          className={`px-2 py-1 rounded ${getVencimientoColor(
+            item.fecha_vencimiento
+          )}`}
         >
-          +1
-        </button>
-
-        <button 
-          className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-          onClick={() => onRemove(item.batch_id)}
-        >
-          -1
-        </button>
+          {new Date(item.fecha_vencimiento).toLocaleDateString()}
+        </span>
       </td>
 
+      <td className="p-3 flex gap-2">
+        <button
+          onClick={() => onAdd(item)}
+          className="px-3 py-1 bg-green-600 text-white rounded"
+        >
+          + Stock
+        </button>
+
+        <button
+          onClick={() => onRemove(item)}
+          className="px-3 py-1 bg-red-600 text-white rounded"
+        >
+          - Stock
+        </button>
+      </td>
     </tr>
   );
 }

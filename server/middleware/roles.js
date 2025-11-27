@@ -1,9 +1,13 @@
-module.exports.checkRole = (allowedRoles) => {
-    return (req, res, next) => {
-        const userRole = req.user.uid; // viene del payload del JWT
-        if (!allowedRoles.includes(userRole)) {
-            return res.status(403).json({ message: "No tienes permisos para esta acción" });
-        }
-        next();
-    };
+module.exports.checkRole = (rolesPermitidos) => (req, res, next) => {
+  const role = req.user?.roleId;
+
+  if (!role) {
+    return res.status(403).json("Rol no encontrado en token");
+  }
+
+  if (!rolesPermitidos.includes(role)) {
+    return res.status(403).json("No autorizado");
+  }
+
+  next();
 };

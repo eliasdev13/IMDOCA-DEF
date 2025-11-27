@@ -1,35 +1,30 @@
-import { useState } from "react";
-import Navbar from "./components/layout/Navbar";
-import Sidebar from "./components/layout/Sidebar";
-import AppRoutes from "./routes/AppRoutes";
 import { useAuth } from "./context/AuthContext";
+import { useLocation } from "react-router-dom";
+import AppRoutes from "./routes/AppRoutes";
+import DashboardLayout from "./components/layout/DashboardLayout";
 
 export default function App() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user, loading } = useAuth();
+  const location = useLocation();
 
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+  // Detectar login
+  const isLoginPage = location.pathname === "/login";
 
-  if (loading) return <div>Cargando...</div>;
+  if (loading)
+    return <div className="text-center mt-20 text-gray-500">Cargando...</div>;
 
-  return (
-    <div className="flex min-h-screen">
-      {user && (
-        <Sidebar
-          isOpen={sidebarOpen}
-          toggleSidebar={toggleSidebar}
-          role={user.roleId}
-          user={user}
-        />
-      )}
+  // 🔥 Si está en login → no layout
+  if (isLoginPage) return <AppRoutes />;
 
-      <div className="flex-1 flex flex-col">
-        <Navbar toggleSidebar={toggleSidebar} />
+  // 🔥 Si está logueado → dashboard con layout completo
+  if (user) {
+    return (
+      <DashboardLayout>
+        <AppRoutes />
+      </DashboardLayout>
+    );
+  }
 
-        <main className={`p-4 transition-all duration-300 ${user ? "md:ml-64" : ""}`}>
-          <AppRoutes />
-        </main>
-      </div>
-    </div>
-  );
+  // 🔥 Si no está logueado → rutas sin sidebar/nav
+  return <AppRoutes />;
 }

@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+
 import {
   HomeIcon,
   ShoppingCartIcon,
@@ -7,88 +8,103 @@ import {
   ClipboardIcon,
   UserCircleIcon,
   ArrowRightOnRectangleIcon,
+  DocumentTextIcon,
+  UserGroupIcon,
 } from "@heroicons/react/24/outline";
 
 export default function Sidebar({ isOpen, toggleSidebar }) {
   const { user, logout } = useAuth();
-  const role = user?.rol_id || user?.roleId;
+  const role = user?.rol_id;
 
-  if (!user) return null; // 🔹 mientras carga el usuario
+  if (!user) return null;
 
-  const linksByRole = {
+  const links = {
     1: [
-      { title: "Register User", path: "/createUser", icon: <ClipboardIcon className="w-5 h-5" /> },
-      { title: "Register Client", path: "/createClient", icon: <ClipboardIcon className="w-5 h-5" /> },
-      { title: "Register Product", path: "/createProduct", icon: <ClipboardIcon className="w-5 h-5" /> },
-      { title: "Dashboard", path: "/admin", icon: <ClipboardIcon className="w-5 h-5" /> },
-      { title: "Products", path: "/products", icon: <ClipboardIcon className="w-5 h-5" /> },
-      { title: "Orders", path: "/admin/orders", icon: <ClipboardIcon className="w-5 h-5" /> },
-      { title: "Users", path: "/admin/users", icon: <UsersIcon className="w-5 h-5" /> },
-    ],
-    2: [
-      { title: "Dashboard", path: "/seller", icon: <ClipboardIcon className="w-5 h-5" /> },
-      { title: "Products", path: "/products", icon: <ClipboardIcon className="w-5 h-5" /> },
-      { title: "Inventory", path: "/inventory", icon: <ClipboardIcon className="w-5 h-5" /> },
+      { title: "Home", path: "/", icon: <HomeIcon className="w-5 h-5" /> },
+
+      { title: "Products", path: "/products", icon: <ShoppingCartIcon className="w-5 h-5" /> },
       { title: "Cart", path: "/cart", icon: <ShoppingCartIcon className="w-5 h-5" /> },
-      { title: "Orders", path: "/seller/orders", icon: <ClipboardIcon className="w-5 h-5" /> },
-      { title: "Checkout", path: "/checkout", icon: <ShoppingCartIcon className="w-5 h-5" /> },
+
+      { title: "Inventory", path: "/inventory", icon: <ClipboardIcon className="w-5 h-5" /> },
+
+      { title: "Orders Admin", path: "/admin/orders", icon: <ClipboardIcon className="w-5 h-5" /> },
+
+      { title: "Create Product", path: "/createProduct", icon: <ClipboardIcon className="w-5 h-5" /> },
+
+      // NUEVO MENÚ
+      {
+        title: "Administración Usuarios",
+        path: "/admin/manage",
+        icon: <UserGroupIcon className="w-5 h-5" />,
+      },
     ],
+
+    2: [
+      { title: "Home", path: "/", icon: <HomeIcon className="w-5 h-5" /> },
+      { title: "Products", path: "/products", icon: <ShoppingCartIcon className="w-5 h-5" /> },
+      { title: "Cart", path: "/cart", icon: <ShoppingCartIcon className="w-5 h-5" /> },
+      { title: "Mis Pedidos", path: "/my-orders", icon: <DocumentTextIcon className="w-5 h-5" /> },
+      { title: "Inventory", path: "/inventory", icon: <ClipboardIcon className="w-5 h-5" /> },
+      { title: "Orders Seller", path: "/admin/orders", icon: <ClipboardIcon className="w-5 h-5" /> },
+    ],
+
     3: [
       { title: "Home", path: "/", icon: <HomeIcon className="w-5 h-5" /> },
       { title: "Products", path: "/products", icon: <ShoppingCartIcon className="w-5 h-5" /> },
       { title: "Cart", path: "/cart", icon: <ShoppingCartIcon className="w-5 h-5" /> },
-      { title: "Checkout", path: "/checkout", icon: <ShoppingCartIcon className="w-5 h-5" /> },
+      { title: "Mis Pedidos", path: "/my-orders", icon: <DocumentTextIcon className="w-5 h-5" /> },
     ],
   };
 
-  const navLinks = linksByRole[role] || [];
-
-  // Perfil siempre visible al inicio
-  navLinks.unshift({
-    title: "Perfil",
-    path: "/profile",
-    icon: <UserCircleIcon className="w-5 h-5" />,
-  });
+  const navLinks = [
+    { title: "Perfil", path: "/profile", icon: <UserCircleIcon className="w-5 h-5" /> },
+    ...links[role],
+  ];
 
   return (
-    <div
-      className={`fixed top-0 left-0 h-screen w-64 bg-gray-900 text-white shadow-md z-40
-        transform ${isOpen ? "translate-x-0" : "-translate-x-full"} 
-        transition-transform duration-300 md:translate-x-0 md:static md:block flex flex-col`}
+    <aside
+      className={`fixed top-0 left-0 h-full w-64 bg-white dark:bg-gray-900 
+      shadow-xl border-r border-gray-200 dark:border-gray-700
+      transform ${isOpen ? "translate-x-0" : "-translate-x-full"}
+      transition-transform duration-300 ease-in-out
+      md:translate-x-0 md:static`}
     >
-      {/* Links */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="p-4 font-bold text-xl border-b border-gray-700">Menu</div>
-        <ul className="mt-4">
-          {navLinks.map((link) => (
-            <li key={link.title}>
-              <NavLink
-                to={link.path}
-                onClick={toggleSidebar}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-2 hover:bg-gray-700 transition rounded ${
-                    isActive ? "bg-blue-600" : ""
-                  }`
-                }
-              >
-                {link.icon}
-                <span>{link.title}</span>
-              </NavLink>
-            </li>
-          ))}
-        </ul>
+      <div className="p-4 text-xl font-semibold border-b border-gray-200 dark:border-gray-700">
+        Menú
       </div>
 
-      {/* Logout fijo al final */}
-      <div className="p-4 border-t border-gray-700">
+      <ul className="mt-2 px-2 space-y-1">
+        {navLinks.map((link) => (
+          <li key={link.path}>
+            <NavLink
+              to={link.path}
+              onClick={toggleSidebar}
+              className={({ isActive }) =>
+                `
+                flex items-center gap-3 px-4 py-3 rounded-lg
+                hover:bg-gray-200 dark:hover:bg-gray-800 transition
+                ${isActive ? "bg-blue-600 text-white" : ""}
+              `
+              }
+            >
+              {link.icon}
+              <span>{link.title}</span>
+            </NavLink>
+          </li>
+        ))}
+      </ul>
+
+      <div className="p-4 border-t border-gray-200 dark:border-gray-700">
         <button
           onClick={logout}
-          className="flex items-center gap-2 w-full px-4 py-2 hover:bg-gray-700 rounded text-red-500"
+          className="flex items-center gap-2 w-full px-4 py-2 rounded-lg
+            bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300 
+            hover:bg-red-200 dark:hover:bg-red-800 transition"
         >
           <ArrowRightOnRectangleIcon className="w-5 h-5" />
-          <span>Salir</span>
+          Salir
         </button>
       </div>
-    </div>
+    </aside>
   );
 }

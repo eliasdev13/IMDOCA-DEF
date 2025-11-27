@@ -1,85 +1,98 @@
-// src/utils/axiosInstance.js
-import axios from "axios";
+  // src/utils/axiosInstance.js
+  import axios from "axios";
 
-const axiosInstance = axios.create({
-  baseURL: "/", // proxy al backend
-  withCredentials: true, // envía cookies HttpOnly
-});
-
-let isRefreshing = false;
-let failedQueue = [];
-
-// Procesa requests en cola después del refresh
-const processQueue = (error, token = null) => {
-  failedQueue.forEach(prom => {
-    if (error) prom.reject(error);
-    else prom.resolve(token);
+  const axiosInstance = axios.create({
+    baseURL: "/api",   // 🔥 Mejor: todas las rutas salen como /api/....
+    withCredentials: true,
   });
-  failedQueue = [];
-};
 
-// Interceptor de requests: agrega Authorization
-axiosInstance.interceptors.request.use(
-  (config) => {
+  // -------------------------------------------------------
+  // Estado del refresh
+  // -------------------------------------------------------
+  let isRefreshing = false;
+  let failedQueue = [];
+
+  const processQueue = (error, token = null) => {
+    failedQueue.forEach(prom => {
+      error ? prom.reject(error) : prom.resolve(token);
+    });
+    failedQueue = [];
+  };
+
+  // -------------------------------------------------------
+  // Request: agrega Authorization
+  // -------------------------------------------------------
+  axiosInstance.interceptors.request.use((config) => {
     const token = localStorage.getItem("accessToken");
-    if (token) config.headers["Authorization"] = `Bearer ${token}`;
+    if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
-  },
-  (error) => Promise.reject(error)
-);
+  });
 
-// Interceptor de responses: maneja 403 y refresh token
-axiosInstance.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
+  // -------------------------------------------------------
+  // Response: intenta refresh SOLO si corresponde
+  // -------------------------------------------------------
+  axiosInstance.interceptors.response.use(
+    (res) => res,
 
-    // Solo aplicamos refresh si es un 403 y no se ha reintentado
-    if (error.response?.status === 403 && !originalRequest._retry) {
-      originalRequest._retry = true;
+    async (error) => {
+      const original = error.config;
 
-      if (isRefreshing) {
-        // Si ya hay refresh en curso, ponemos la request en cola
-        return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject });
-        }).then((token) => {
-          originalRequest.headers["Authorization"] = `Bearer ${token}`;
-          return axiosInstance(originalRequest);
-        });
+      // ----------------------------------------------------
+      // NO intentar refresh si:
+      // - es refresh mismo
+      // - es un error de roles ("No autorizado")
+      // ----------------------------------------------------
+      if (original.url === "/refresh") {
+        return Promise.reject(error);
       }
 
-      isRefreshing = true;
+      if (error.response?.data === "No autorizado") {
+        return Promise.reject(error);
+      }
 
-      return new Promise(async (resolve, reject) => {
+      // ----------------------------------------------------
+      // REFRESH TOKEN (solo si status 403 y no reintentado)
+      // ----------------------------------------------------
+      if (error.response?.status === 403 && !original._retry) {
+        original._retry = true;
+
+        if (isRefreshing) {
+          return new Promise((resolve, reject) =>
+            failedQueue.push({ resolve, reject })
+          ).then((token) => {
+            original.headers.Authorization = `Bearer ${token}`;
+            return axiosInstance(original);
+          });
+        }
+
+        isRefreshing = true;
+
         try {
-          // Llamada a refresh
-          const res = await axios.post("/api/refresh", {}, { withCredentials: true });
+          // 🔥 usar axiosInstance, NO axios global
+          const res = await axiosInstance.post("/refresh");
+
           const newToken = res.data.accessToken;
 
-          if (!newToken) throw new Error("No se recibió nuevo token");
-
-          // Guardamos token nuevo
           localStorage.setItem("accessToken", newToken);
-          axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
+          axiosInstance.defaults.headers.Authorization = `Bearer ${newToken}`;
 
           isRefreshing = false;
           processQueue(null, newToken);
 
-          // Reintentamos la request original
-          originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
-          resolve(axiosInstance(originalRequest));
+          original.headers.Authorization = `Bearer ${newToken}`;
+          return axiosInstance(original);
+
         } catch (err) {
           isRefreshing = false;
           processQueue(err, null);
           localStorage.removeItem("accessToken");
-          window.location.href = "/login"; // fuerza logout
-          reject(err);
+          window.location.href = "/login";
+          return Promise.reject(err);
         }
-      });
+      }
+
+      return Promise.reject(error);
     }
+  );
 
-    return Promise.reject(error);
-  }
-);
-
-export default axiosInstance;
+  export default axiosInstance;

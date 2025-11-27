@@ -1,14 +1,19 @@
+// src/components/layout/ProtectedRoute.jsx
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
-const ProtectedRoute = ({ role }) => {
+export default function ProtectedRoute({ role }) {
   const { user, loading } = useAuth();
 
-  if (loading) return <p>Cargando...</p>; // Espera a que cargue el contexto
-  if (!user) return <Navigate to="/login" replace />; // No está logueado
+  // ⏳ Esperar a que AuthContext termine refresh/init
+  if (loading) return <p>Cargando...</p>;
+
+  // ❌ No logueado → enviar a login
+  if (!user) return <Navigate to="/login" replace />;
+
+  // ❌ No tiene el rol requerido
   if (role && user.rol_id !== role) return <Navigate to="/" replace />;
 
-  return <Outlet />; // Renderiza las rutas hijas
-};
-
-export default ProtectedRoute;
+  // ✔ OK
+  return <Outlet />;
+}

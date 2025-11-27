@@ -18,7 +18,7 @@ export const refreshAPI = async () => {
 
 // LOGOUT
 export const logoutAPI = async () => {
-  const res = await axiosInstance.post("/api/logout", {}, { withCredentials: true });
+  const res = await axiosInstance.post("/logout", {}, { withCredentials: true });
   localStorage.removeItem("accessToken"); // asegurarse de limpiar token
   return res.data;
 };

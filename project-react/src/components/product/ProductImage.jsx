@@ -1,33 +1,36 @@
 export default function ProductImage({ imagen_url, nombre, size = "card" }) {
-  let className = "";
-  const fallback = "http://localhost:3000/uploads/default.jpg";
+  const fallback = "/uploads/default.jpg";
 
-  switch (size) {
-    case "mini":
-      className = "w-14 h-14 object-cover rounded-md shadow";
-      break;
+  const classBySize = {
+    mini: "w-14 h-14 object-cover rounded-md shadow",
+    detail:
+      "w-full max-w-lg h-96 md:h-[450px] rounded-xl shadow object-cover mx-auto",
+    card: "w-40 h-40 md:w-48 md:h-48 rounded-lg shadow object-cover",
+  };
 
-    case "detail":
-      className = "w-full max-w-lg h-96 md:h-[450px] object-cover rounded-xl shadow mx-auto";
-      break;
+  const className = classBySize[size] || classBySize.card;
 
-    case "card":
-    default:
-      className = "w-40 h-40 md:w-48 md:h-48 object-cover rounded-lg shadow";
-      break;
-  }
-
+  // Si no hay imagen → fallback inmediato
   if (!imagen_url) {
-    return <img src={fallback} alt={nombre} className={className} />;
+    return (
+      <img
+        src={fallback}
+        alt={nombre}
+        loading="lazy"
+        className={`${className} animate-fade-in`}
+      />
+    );
   }
 
+  // Tomar solo la primera
   const img = imagen_url.split(",")[0].trim();
 
   return (
     <img
       src={`http://localhost:3000/uploads/${img}`}
       alt={nombre}
-      className={className}
+      loading="lazy"
+      className={`${className} animate-fade-in`}
       onError={(e) => (e.target.src = fallback)}
     />
   );

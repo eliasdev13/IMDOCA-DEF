@@ -1,23 +1,47 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap");
 @import "tailwindcss";
 
-@theme{
-  --font-roboto: 'Roboto', 'sans-serif'
+/* =====================================================
+   TIPOGRAFÍA GLOBAL
+===================================================== */
+:root {
+  --font-primary: 'Roboto', sans-serif;
 }
 
-@keyframes slideIn {
-  from {
-    transform: translateY(-1rem);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+body {
+  font-family: var(--font-primary);
 }
 
-.animate-slide-in {
-  animation: slideIn 0.3s ease-out;
+/* =====================================================
+   ANIMACIONES PERSONALIZADAS
+===================================================== */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
+.animate-fade-in {
+  animation: fade-in 1.3s ease forwards;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 1s ease forwards;
+}
+
+/* Delays */
+.animation-delay-200 { animation-delay: .2s; }
+.animation-delay-400 { animation-delay: .4s; }
+.animation-delay-600 { animation-delay: .6s; }
+.animation-delay-800 { animation-delay: .8s; }
+
+/* =====================================================
+   TRANSICIÓN PARA MODO OSCURO
+===================================================== */
+html {
+  transition: background-color 0.3s, color 0.3s;
+}
